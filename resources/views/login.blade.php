@@ -38,9 +38,9 @@
                     </div>
                 </div>
 
-                <button type="submit" class="w-full bg-gradient-to-r from-[#ed3d96] to-[#c92476] text-white font-bold py-3.5 md:py-4 rounded-2xl shadow-md hover:opacity-90 transition mt-4 md:mt-6 text-sm md:text-base">
+                <a href="/inicio" class="block text-center w-full bg-gradient-to-r from-[#ed3d96] to-[#c92476] text-white font-bold py-3.5 md:py-4 rounded-2xl shadow-md hover:opacity-90 transition mt-4 md:mt-6 text-sm md:text-base">
                     Entrar al Sistema
-                </button>
+                </a>
             </form>
             
             <div class="mt-6 md:mt-8 text-center border-t border-gray-100 pt-4">
