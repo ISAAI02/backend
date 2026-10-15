@@ -6,9 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
+    
     public function up(): void
     {
         Schema::create('unidades', function (Blueprint $table) {
@@ -19,13 +17,21 @@ return new class extends Migration
             $table->string('estatus', 20)->default('activa');
             $table->timestamps();
         });
+
+        // Conectar las llaves foráneas de users ahora que roles y unidades ya existen
+        Schema::table('users', function (Blueprint $table) {
+            $table->foreign('rol_id')->references('id')->on('roles');
+            $table->foreign('unidad_id')->references('id')->on('unidades');
+        });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropForeign(['rol_id']);
+            $table->dropForeign(['unidad_id']);
+        });
+
         Schema::dropIfExists('unidades');
     }
 };

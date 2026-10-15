@@ -1,0 +1,873 @@
+
+database\migrations\0001_01_01_000000_create_users_table.php
+
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+
+    public function up(): void
+    {
+        Schema::create('users', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('rol_id');
+            $table->unsignedBigInteger('unidad_id')->nullable();
+            $table->string('nombre', 100);
+            $table->string('email', 100)->unique();
+            $table->string('password', 255);
+            $table->string('telefono', 15)->nullable();
+            $table->string('curp', 18)->unique()->nullable();
+            $table->string('nss', 11)->unique()->nullable();
+            $table->boolean('activo')->default(true);
+            $table->rememberToken();
+            $table->timestamps();
+        });
+
+        Schema::create('password_reset_tokens', function (Blueprint $table) {
+            $table->string('email')->primary();
+            $table->string('token');
+            $table->timestamp('created_at')->nullable();
+        });
+
+        Schema::create('sessions', function (Blueprint $table) {
+            $table->string('id')->primary();
+            $table->foreignId('user_id')->nullable()->index();
+            $table->string('ip_address', 45)->nullable();
+            $table->text('user_agent')->nullable();
+            $table->longText('payload');
+            $table->integer('last_activity')->index();
+        });
+    }
+    
+
+    public function down(): void
+
+    {
+        Schema::dropIfExists('users');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('sessions');
+    }
+};
+
+database\migrations\0001_01_01_000001_create_cache_table.php
+
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('cache', function (Blueprint $table) {
+            $table->string('key')->primary();
+            $table->mediumText('value');
+            $table->bigInteger('expiration')->index();
+        });
+
+        Schema::create('cache_locks', function (Blueprint $table) {
+            $table->string('key')->primary();
+            $table->string('owner');
+            $table->bigInteger('expiration')->index();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('cache');
+        Schema::dropIfExists('cache_locks');
+    }
+};
+
+database\migrations\0001_01_01_000002_create_jobs_table.php
+
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('jobs', function (Blueprint $table) {
+            $table->id();
+            $table->string('queue')->index();
+            $table->longText('payload');
+            $table->unsignedSmallInteger('attempts');
+            $table->unsignedInteger('reserved_at')->nullable();
+            $table->unsignedInteger('available_at');
+            $table->unsignedInteger('created_at');
+        });
+
+        Schema::create('job_batches', function (Blueprint $table) {
+            $table->string('id')->primary();
+            $table->string('name');
+            $table->integer('total_jobs');
+            $table->integer('pending_jobs');
+            $table->integer('failed_jobs');
+            $table->longText('failed_job_ids');
+            $table->mediumText('options')->nullable();
+            $table->integer('cancelled_at')->nullable();
+            $table->integer('created_at');
+            $table->integer('finished_at')->nullable();
+        });
+
+        Schema::create('failed_jobs', function (Blueprint $table) {
+            $table->id();
+            $table->string('uuid')->unique();
+            $table->string('connection');
+            $table->string('queue');
+            $table->longText('payload');
+            $table->longText('exception');
+            $table->timestamp('failed_at')->useCurrent();
+
+            $table->index(['connection', 'queue', 'failed_at']);
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('jobs');
+        Schema::dropIfExists('job_batches');
+        Schema::dropIfExists('failed_jobs');
+    }
+};
+
+database\migrations\2026_09_18_155207_create_roles_table.php
+
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('roles', function (Blueprint $table) {
+            $table->id(); // Equivalente a BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY
+            $table->string('nombre', 50);
+            $table->timestamps(); // Genera created_at y updated_at
+            });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('roles');
+    }
+};
+
+database\migrations\2026_09_18_155208_create_colonias_table.php
+
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('colonias', function (Blueprint $table) {
+            $table->id();
+            $table->string('nombre', 100);
+            $table->string('codigo_postal', 10)->nullable();
+            $table->timestamps();
+        });
+    }   
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('colonias');
+    }
+};
+
+database\migrations\2026_09_18_155209_create_unidades_table.php
+
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    
+    public function up(): void
+    {
+        Schema::create('unidades', function (Blueprint $table) {
+            $table->id();
+            $table->string('numero_unidad', 50)->unique();
+            $table->string('placas', 20)->nullable();
+            $table->integer('capacidad_litros')->nullable();
+            $table->string('estatus', 20)->default('activa');
+            $table->timestamps();
+        });
+
+        // Conectar las llaves foráneas de users ahora que roles y unidades ya existen
+        Schema::table('users', function (Blueprint $table) {
+            $table->foreign('rol_id')->references('id')->on('roles');
+            $table->foreign('unidad_id')->references('id')->on('unidades');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropForeign(['rol_id']);
+            $table->dropForeign(['unidad_id']);
+        });
+
+        Schema::dropIfExists('unidades');
+    }
+};
+
+database\migrations\2026_09_18_155210_create_contactos_emergencia_table.php
+
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('contactos_emergencia', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained('users'); // Crea la columna y la llave foránea
+            $table->string('nombre', 100);
+            $table->string('telefono', 15);
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('contactos_emergencia');
+    }
+};
+
+database\migrations\2026_09_18_155211_create_detalles_operador_table.php
+
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('detalles_operador', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained('users');
+            $table->string('numero_licencia', 20)->nullable();
+            $table->date('vigencia_licencia')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('detalles_operador');
+    }
+};
+
+database\migrations\2026_09_18_155212_create_reportes_table.php
+
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('reportes', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('unidad_id')->constrained('unidades');
+            $table->foreignId('colonia_id')->constrained('colonias');
+            $table->string('direccion', 255);
+            $table->integer('litros_entregados')->nullable();
+            $table->text('observaciones')->nullable();
+            $table->string('estatus', 30)->default('completado');
+            $table->dateTime('fecha_reporte');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('reportes');
+    }
+};
+
+database\migrations\2026_09_18_155213_create_reporte_imagenes_table.php
+
+
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('reporte_imagenes', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('reporte_id')->constrained('reportes');
+            $table->string('ruta_archivo', 255);
+            $table->integer('peso_kb')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('reporte_imagenes');
+    }
+};
+
+resources\views\entrega.blade.php
+
+
+@extends('layouts.app')
+
+@section('content')
+<div class="flex flex-col md:flex-row min-h-screen bg-gray-50 w-full">
+
+    <x-bottom-nav />
+
+    <main class="flex-1 overflow-y-auto pb-36 md:pb-8 md:p-8 w-full">
+        <div class="max-w-2xl mx-auto">
+
+            <div class="bg-[#e6328c] md:rounded-[2rem] pt-8 pb-6 px-5 md:px-8 text-white shadow-sm">
+                <h1 class="text-lg md:text-2xl font-extrabold">Registrar Nueva Entrega</h1>
+                <p class="text-xs md:text-sm text-pink-100 mt-1">Completa los datos del suministro de agua potable</p>
+            </div>
+
+            <div class="px-5 md:px-0 mt-5">
+                @if ($errors->any())
+                    <div class="mb-4 bg-red-50 border border-red-200 text-red-600 text-xs md:text-sm rounded-2xl p-4">
+                        <ul class="list-disc pl-4 space-y-1">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                <form action="{{ route('entrega.store') }}" method="POST" enctype="multipart/form-data" class="bg-white border border-gray-100 rounded-2xl md:rounded-3xl p-5 md:p-8 shadow-sm space-y-5">
+                    @csrf
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Unidad / Pipa</label>
+                        <select name="unidad_id" required class="w-full bg-[#fdf2f8] border border-pink-100 rounded-2xl py-3 px-4 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400">
+                            <option value="">Selecciona una unidad...</option>
+                            @foreach ($unidades ?? [] as $unidad)
+                                <option value="{{ $unidad->id }}" {{ old('unidad_id', auth()->user()?->unidad_id) == $unidad->id ? 'selected' : '' }}>
+                                    {{ $unidad->numero_unidad }} ({{ number_format($unidad->capacidad_litros) }} L)
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>  
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Colonia</label>
+                        <select name="colonia_id" required class="w-full bg-[#fdf2f8] border border-pink-100 rounded-2xl py-3 px-4 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400">
+                            <option value="">Selecciona la colonia...</option>
+                            @foreach ($colonias ?? [] as $colonia)
+                                <option value="{{ $colonia->id }}" {{ old('colonia_id') == $colonia->id ? 'selected' : '' }}>
+                                    {{ $colonia->nombre }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Dirección (Calle y Número)</label>
+                        <input type="text" name="direccion" value="{{ old('direccion') }}" required placeholder="Ej. Calle Hidalgo #123" class="w-full bg-[#fdf2f8] border border-pink-100 rounded-2xl py-3 px-4 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Litros Entregados</label>
+                        <input type="number" name="litros_entregados" value="{{ old('litros_entregados', 1000) }}" min="1" required placeholder="Ej. 2500" class="w-full bg-[#fdf2f8] border border-pink-100 rounded-2xl py-3 px-4 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Observaciones (Opcional)</label>
+                        <textarea name="observaciones" rows="3" placeholder="Notas adicionales de la entrega..." class="w-full bg-[#fdf2f8] border border-pink-100 rounded-2xl py-3 px-4 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400">{{ old('observaciones') }}</textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Fotografías de Evidencia</label>
+                        <input type="file" name="imagenes[]" multiple accept="image/*" class="w-full bg-[#fdf2f8] border border-pink-100 rounded-2xl py-2.5 px-4 text-gray-700 text-xs file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-[#e6328c] file:text-white hover:file:opacity-90">
+                    </div>
+
+                    <button type="submit" class="w-full bg-gradient-to-r from-[#ed3d96] to-[#c92476] text-white font-bold py-4 rounded-2xl shadow-lg hover:opacity-90 transition cursor-pointer">
+                        Guardar Entrega
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </main>
+</div>
+@endsection
+resources\views\historial.blade.php
+
+
+@extends('layouts.app')
+
+@section('content')
+<div class="flex flex-col md:flex-row min-h-screen bg-gray-50 w-full">
+    
+    <x-bottom-nav />
+
+    <main class="flex-1 overflow-y-auto pb-36 md:pb-8 md:p-8 w-full">
+        <div class="max-w-4xl mx-auto">
+            
+            <div class="bg-[#e6328c] md:rounded-[2rem] pt-8 pb-6 md:pb-10 px-5 md:px-8 text-white shadow-sm transition-all">
+                <div class="flex justify-between items-start">
+                    <div class="flex items-center gap-2 md:gap-3">
+                        <div class="bg-white/20 p-2 md:p-2.5 rounded-lg">
+                            <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        </div>
+                        <div class="leading-tight">
+                            <h2 class="font-extrabold text-sm md:text-lg tracking-wide uppercase">Historial del Día</h2>
+                            <p class="text-[0.65rem] md:text-sm text-pink-100">{{ $totalEntregasHoy ?? 0 }} entregas • {{ number_format($totalLitrosHoy ?? 0) }} L suministrados</p>
+                        </div>
+                    </div>
+                    <div class="text-right leading-tight">
+                        <p class="font-bold text-sm md:text-lg">{{ now()->format('h:i a') }}</p>
+                        <p class="text-[0.65rem] md:text-sm text-pink-100 capitalize">{{ now()->locale('es')->translatedFormat('l, d \d\e F') }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="px-5 md:px-0 mt-6 md:mt-8">
+                @if (session('success'))
+                    <div class="mb-4 bg-[#e6f7f4] border border-[#00a884]/30 text-[#00a884] text-xs md:text-sm font-bold rounded-2xl p-4">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                <h4 class="text-[0.65rem] md:text-sm font-bold text-gray-500 tracking-wider mb-4 uppercase">Entregas Registradas</h4>
+                
+                <div class="bg-white border border-gray-100 rounded-2xl md:rounded-3xl divide-y divide-gray-50 shadow-sm overflow-hidden">
+                    
+                    @forelse ($reportes ?? [] as $reporte)
+                    <div class="p-4 md:p-5 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center gap-3 md:gap-4">
+                            <div class="bg-[#e6f7f4] p-2 md:p-3 rounded-xl text-[#00a884]">
+                                <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            <div>
+                                <p class="font-bold text-[#1a1a2e] text-sm md:text-base">{{ $reporte->direccion }}</p>
+                                <p class="text-xs md:text-sm text-gray-500 mt-0.5">{{ $reporte->colonia->nombre ?? '' }} • {{ number_format($reporte->litros_entregados) }} L</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xs md:text-sm font-bold text-[#1a1a2e]">{{ $reporte->fecha_reporte->format('h:i A') }}</p>
+                            <p class="text-[0.65rem] md:text-xs text-[#00a884] font-bold flex items-center justify-end gap-1 mt-1">
+                                <svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                {{ ucfirst($reporte->estatus) }}
+                            </p>
+                        </div>
+                    </div>
+                    @empty
+                    <div class="p-4 md:p-5 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                        <p class="text-xs md:text-sm text-gray-500">Aún no hay entregas registradas.</p>
+                    </div>
+                    @endforelse
+
+                </div>
+
+                @if(isset($reportes) && method_exists($reportes, 'links'))
+                    <div class="mt-4">
+                        {{ $reportes->links() }}
+                    </div>
+                @endif
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<script>
+    function actualizarReloj() {
+        const ahora = new Date();
+        
+        // Formatear hora (ej. 03:15 pm)
+        let horas = ahora.getHours();
+        const minutos = ahora.getMinutes().toString().padStart(2, '0');
+        const ampm = horas >= 12 ? 'pm' : 'am';
+        horas = horas % 12;
+        horas = horas ? horas : 12; // la hora '0' debe ser '12'
+        const horaFormateada = `${horas.toString().padStart(2, '0')}:${minutos} ${ampm}`;
+        
+        // Formatear fecha en español (ej. jueves, 15 de octubre)
+        const opcionesFecha = { weekday: 'long', day: 'numeric', month: 'long' };
+        const fechaFormateada = ahora.toLocaleDateString('es-ES', opcionesFecha);
+
+        // Inyectar en los elementos HTML
+        const elHora = document.getElementById('reloj-hora');
+        const elFecha = document.getElementById('reloj-fecha');
+        
+        if (elHora) elHora.innerText = horaFormateada;
+        if (elFecha) elFecha.innerText = fechaFormateada;
+    }
+
+    // Ejecutar al cargar y actualizar cada segundo
+    actualizarReloj();
+    setInterval(actualizarReloj, 1000);
+</script>
+
+@endsection
+resources\views\inicio.blade.php
+
+
+@extends('layouts.app')
+
+@section('content')
+<div class="flex flex-col md:flex-row min-h-screen bg-gray-50 w-full">
+    
+    <x-bottom-nav />
+
+    <main class="flex-1 overflow-y-auto pb-36 md:pb-8 md:p-8 w-full">
+        <div class="max-w-4xl mx-auto">
+            
+            <div class="bg-[#e6328c] md:rounded-[2rem] pt-8 pb-6 md:pb-10 px-5 md:px-8 text-white shadow-sm transition-all">
+                <div class="flex justify-between items-start mb-6 md:mb-8">
+                    <div class="flex items-center gap-2 md:gap-3">
+                        <div class="bg-white/20 p-2 md:p-2.5 rounded-lg">
+                            <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        </div>
+                        <div class="leading-tight">
+                            <h2 class="font-extrabold text-sm md:text-lg tracking-wide uppercase">Agua Móvil</h2>
+                            <p class="text-[0.65rem] md:text-sm text-pink-100">Sistema Municipal</p>
+                        </div>
+                    </div>
+                    <div class="text-right leading-tight">
+                        <p class="font-bold text-sm md:text-lg">{{ now()->format('h:i a') }}</p>
+                        <p class="text-[0.65rem] md:text-sm text-pink-100 capitalize">{{ now()->locale('es')->translatedFormat('l, d \d\e F') }}</p>
+                    </div>
+                </div>
+
+                <div class="bg-white/10 border border-white/20 rounded-2xl p-3 md:p-6 flex flex-col gap-2.5 md:gap-4 relative overflow-hidden backdrop-blur-sm">
+                     <div class="flex items-center gap-2 md:gap-4">
+                        <div class="bg-[#0088cc] text-white font-bold text-base md:text-2xl h-10 w-10 md:h-16 md:w-16 rounded-xl flex-shrink-0 flex items-center justify-center shadow-inner">
+                            {{ $user->iniciales ?? 'JP' }}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="font-extrabold text-sm md:text-2xl truncate">{{ $user->nombre ?? 'Juan P. Martínez' }}</h3>
+                            <p class="text-[0.65rem] md:text-sm text-pink-100 mt-0.5 truncate">Operador Certificado • ID #{{ $user->id ?? '4821' }}</p>
+                        </div>
+                        <div class="bg-green-400/20 border border-green-400/50 text-green-100 text-[0.6rem] md:text-xs font-bold px-2 py-1 md:px-4 md:py-2 rounded-full flex-shrink-0 flex items-center gap-1 md:gap-2">
+                            <div class="w-1.5 h-1.5 md:w-2 md:h-2 bg-green-400 rounded-full animate-pulse"></div> En Servicio
+                        </div>
+                    </div>
+                    <div class="border-t border-white/20 pt-3 md:pt-4 flex items-center gap-2 text-xs md:text-sm font-medium">
+                        <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+                        {{ $unidadActual->numero_unidad ?? 'PIPA 04' }} <span class="text-pink-100 font-normal">· Agua Potable Municipal</span>
+                    </div>
+                </div>
+            </div> 
+            
+            <div class="px-5 md:px-0 mt-3 md:mt-6 relative z-10 flex flex-col md:flex-row gap-3 md:gap-5">
+                <a href="/entrega" class="flex-1 bg-gradient-to-r from-[#ed3d96] to-[#c92476] text-white font-bold py-4 md:py-5 rounded-2xl shadow-lg flex justify-center items-center gap-2 hover:opacity-90 transition md:hover:-translate-y-1">
+                    <svg class="w-5 h-5 md:w-6 md:h-6 text-pink-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Empezar Nueva Entrega
+                </a>
+                <a href="/historial" class="flex-1 bg-white text-[#1a1a2e] border border-gray-100 font-bold py-4 md:py-5 rounded-2xl shadow-sm flex justify-center items-center gap-2 hover:bg-gray-50 transition md:hover:-translate-y-1">
+                    <svg class="w-5 h-5 md:w-6 md:h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Ver Historial del Día
+                </a>
+            </div>
+
+            <div class="px-5 md:px-0 mt-8 md:mt-12">
+                <h4 class="text-[0.65rem] md:text-sm font-bold text-gray-500 tracking-wider mb-4 uppercase">Última Actividad</h4>
+                
+                <div class="bg-white border border-gray-100 rounded-2xl md:rounded-3xl divide-y divide-gray-50 shadow-sm overflow-hidden">
+                    
+                    @forelse ($ultimosReportes ?? [] as $reporte)
+                    <div class="p-4 md:p-5 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center gap-3 md:gap-4">
+                            <div class="bg-[#e6f7f4] p-2 md:p-3 rounded-xl text-[#00a884]">
+                                <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            <div>
+                                <p class="font-bold text-[#1a1a2e] text-sm md:text-base">{{ $reporte->direccion }}</p>
+                                <p class="text-xs md:text-sm text-gray-500 mt-0.5">{{ $reporte->colonia->nombre ?? '' }}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xs md:text-sm font-bold text-[#1a1a2e]">{{ $reporte->fecha_reporte->format('h:i A') }}</p>
+                            <p class="text-[0.65rem] md:text-xs text-[#00a884] font-bold flex items-center justify-end gap-1 mt-1">
+                                <svg class="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                {{ ucfirst($reporte->estatus) }}
+                            </p>
+                        </div>
+                    </div>
+                    @empty
+                    <div class="p-4 md:p-5 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                        <p class="text-xs md:text-sm text-gray-500">Sin entregas registradas hoy.</p>
+                    </div>
+                    @endforelse
+
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<script>
+    function actualizarReloj() {
+        const ahora = new Date();
+        
+        // Formatear hora (ej. 03:15 pm)
+        let horas = ahora.getHours();
+        const minutos = ahora.getMinutes().toString().padStart(2, '0');
+        const ampm = horas >= 12 ? 'pm' : 'am';
+        horas = horas % 12;
+        horas = horas ? horas : 12; // la hora '0' debe ser '12'
+        const horaFormateada = `${horas.toString().padStart(2, '0')}:${minutos} ${ampm}`;
+        
+        // Formatear fecha en español (ej. jueves, 15 de octubre)
+        const opcionesFecha = { weekday: 'long', day: 'numeric', month: 'long' };
+        const fechaFormateada = ahora.toLocaleDateString('es-ES', opcionesFecha);
+
+        // Inyectar en los elementos HTML
+        const elHora = document.getElementById('reloj-hora');
+        const elFecha = document.getElementById('reloj-fecha');
+        
+        if (elHora) elHora.innerText = horaFormateada;
+        if (elFecha) elFecha.innerText = fechaFormateada;
+    }
+
+    // Ejecutar al cargar y actualizar cada segundo
+    actualizarReloj();
+    setInterval(actualizarReloj, 1000);
+</script>
+
+@endsection
+resources\views\login.blade.php
+
+
+@extends('layouts.app')
+
+@section('content')
+<div class="min-h-screen flex flex-col md:flex-row">
+    
+    <div class="bg-gradient-to-b from-[#e6328c] to-[#d6287c] min-h-[35vh] md:h-screen md:w-1/2 flex flex-col items-center justify-center p-4 text-center">
+        <div class="bg-white p-3 rounded-[1.5rem] shadow-lg mb-3 md:mb-6">
+            <img src="{{ asset('img/logo_coco.png') }}" alt="Cocotitlán" class="w-14 h-14 md:w-24 md:h-24 object-contain">
+        </div>
+        <h1 class="text-white text-xl md:text-4xl font-bold tracking-wide">Agua Móvil Municipal</h1>
+        <p class="text-pink-100 text-[0.65rem] md:text-base mt-1 md:mt-2 font-medium">H. Ayuntamiento de Cocotitlán<br>Gobierno Municipal 2025-2027</p>
+    </div>
+
+    <div class="bg-white flex-1 rounded-t-[2rem] md:rounded-none -mt-6 md:mt-0 p-6 md:p-16 lg:p-24 shadow-[0_-10px_20px_rgba(0,0,0,0.1)] md:shadow-none relative z-10 flex flex-col justify-center md:w-1/2">
+        
+        <div class="max-w-sm md:max-w-md w-full mx-auto">
+            <h2 class="text-2xl md:text-3xl font-extrabold text-[#1a1a2e] mb-1 md:mb-2">Iniciar Sesión</h2>
+            <p class="text-gray-500 text-sm md:text-base mb-6 md:mb-8">Ingresa tus datos de operador</p>
+
+            @if ($errors->any())
+                <div class="mb-4 bg-red-50 border border-red-200 text-red-600 text-xs md:text-sm rounded-2xl p-3.5 font-medium">
+                    {{ $errors->first() }}
+                </div>
+            @endif
+
+            <form action="{{ route('login.post') }}" method="POST" class="space-y-4 md:space-y-5">
+                @csrf
+                <div>
+                    <label class="block text-[0.65rem] md:text-xs font-bold text-gray-500 mb-1.5 tracking-wider uppercase">Usuario / ID Operador</label>
+                    <div class="relative">
+                        <input type="text" name="usuario" value="{{ old('usuario') }}" required placeholder="ej. juan.martinez" class="w-full bg-[#fdf2f8] border border-pink-100 rounded-2xl py-3 md:py-3.5 px-10 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400 transition">
+                        <span class="absolute left-3.5 top-3 md:top-3.5 text-gray-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                        </span>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[0.65rem] md:text-xs font-bold text-gray-500 mb-1.5 tracking-wider uppercase">Contraseña</label>
+                    <div class="relative">
+                        <input type="password" name="password" required placeholder="••••••••" class="w-full bg-[#fdf2f8] border border-pink-100 rounded-2xl py-3 md:py-3.5 px-10 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400 transition">
+                        <span class="absolute left-3.5 top-3 md:top-3.5 text-gray-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                        </span>
+                    </div>
+                </div>
+
+                <button type="submit" class="block text-center w-full bg-gradient-to-r from-[#ed3d96] to-[#c92476] text-white font-bold py-3.5 md:py-4 rounded-2xl shadow-md hover:opacity-90 transition mt-4 md:mt-6 text-sm md:text-base cursor-pointer">
+                    Entrar al Sistema
+                </button>
+            </form>
+            
+            <div class="mt-6 md:mt-8 text-center border-t border-gray-100 pt-4">
+                <span class="text-[0.7rem] md:text-xs text-gray-400 bg-white px-2">Sistema de Control de Pipas</span>
+            </div>
+        </div>
+        
+    </div>
+</div>
+@endsection
+resources\views\welcome.blade.php
+
+
+@include('login')
+resources\views\layouts\app.blade.php
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agua Móvil Municipal</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="bg-gray-50 font-sans antialiased text-gray-900">
+    @yield('content')
+</body>
+
+<div class="text-right leading-tight">
+    <!-- Se agregó id="reloj-hora" -->
+    <p id="reloj-hora" class="font-bold text-sm md:text-lg">{{ now()->format('h:i a') }}</p>
+    <!-- Se agregó id="reloj-fecha" -->
+    <p id="reloj-fecha" class="text-[0.65rem] md:text-sm text-pink-100 capitalize">{{ now()->locale('es')->translatedFormat('l, d \d\e F') }}</p>
+</div>
+
+</html>
+resources\views\components\bottom-nav.blade.php
+
+
+<nav class="bg-white border-t md:border-t-0 md:border-r border-gray-100 flex md:flex-col justify-around md:justify-start items-center md:items-start py-2 px-2 md:p-6 fixed md:sticky top-auto md:top-0 bottom-0 w-full md:w-64 z-50 h-auto md:h-screen shadow-[0_-5px_10px_rgba(0,0,0,0.02)] md:shadow-none gap-0 md:gap-4">
+    
+    <div class="hidden md:flex items-center gap-3 mb-8 w-full border-b border-gray-100 pb-6">
+        <!-- Asegúrate de que el logo exista en tu carpeta public/img -->
+        <img src="{{ asset('img/LOGO_COCO.png') }}" class="w-10 h-10 object-contain">
+        <span class="font-extrabold text-[#d6287c] text-sm leading-tight">Agua Móvil<br><span class="text-gray-400 text-xs font-normal">Cocotitlán</span></span>
+    </div>
+
+    <a href="/inicio" class="flex flex-col md:flex-row items-center justify-center md:justify-start w-20 md:w-full py-2 md:py-3 md:px-4 rounded-2xl {{ request()->routeIs('inicio') ? 'text-[#d6287c] bg-[#fdf2f8]' : 'text-gray-400 hover:bg-gray-50' }} transition">
+        <svg class="w-6 h-6 md:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+        <span class="text-[0.65rem] md:text-sm font-bold mt-1 md:mt-0">Inicio</span>
+    </a>
+
+    <a href="/entrega" class="flex flex-col md:flex-row items-center justify-center md:justify-start w-20 md:w-full py-2 md:py-3 md:px-4 rounded-2xl {{ request()->routeIs('entrega') ? 'text-[#d6287c] bg-[#fdf2f8]' : 'text-gray-400 hover:bg-gray-50' }} transition">
+        <svg class="w-6 h-6 md:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        <span class="text-[0.65rem] md:text-sm font-bold mt-1 md:mt-0">Entrega</span>
+    </a>
+
+ 
+    <a href="/historial" class="flex flex-col md:flex-row items-center justify-center md:justify-start w-20 md:w-full py-2 md:py-3 md:px-4 rounded-2xl {{ request()->routeIs('historial') ? 'text-[#d6287c] bg-[#fdf2f8]' : 'text-gray-400 hover:bg-gray-50' }} transition">
+        <svg class="w-6 h-6 md:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+        <span class="text-[0.65rem] md:text-sm font-bold mt-1 md:mt-0">Historial</span>
+    </a>
+</nav>
+routes\web.php
+
+
+<?php
+
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\EntregaController;
+use App\Http\Controllers\HistorialController;
+use App\Http\Controllers\InicioController;
+use Illuminate\Support\Facades\Route;
+
+// Raíz y Login
+Route::get('/', [AuthController::class, 'showLogin'])->name('login');
+Route::get('/login', [AuthController::class, 'showLogin']);
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+
+// Rutas protegidas para operadores autenticados
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+    Route::get('/inicio', [InicioController::class, 'index'])->name('inicio');
+
+    Route::get('/entrega', [EntregaController::class, 'create'])->name('entrega');
+    Route::post('/entrega', [EntregaController::class, 'store'])->name('entrega.store');
+
+    Route::get('/historial', [HistorialController::class, 'index'])->name('historial');
+});

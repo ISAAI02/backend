@@ -9,4 +9,12 @@
 <body class="bg-gray-50 font-sans antialiased text-gray-900">
     @yield('content')
 </body>
+
+<div class="text-right leading-tight">
+    <!-- Se agregó id="reloj-hora" -->
+    <p id="reloj-hora" class="font-bold text-sm md:text-lg">{{ now()->format('h:i a') }}</p>
+    <!-- Se agregó id="reloj-fecha" -->
+    <p id="reloj-fecha" class="text-[0.65rem] md:text-sm text-pink-100 capitalize">{{ now()->locale('es')->translatedFormat('l, d \d\e F') }}</p>
+</div>
+
 </html>
